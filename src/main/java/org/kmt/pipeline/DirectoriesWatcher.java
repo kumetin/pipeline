@@ -42,8 +42,8 @@ public class DirectoriesWatcher {
                 throw new RuntimeException("Failed registering watcher on file %s".formatted(dir), e);
             }
             WatchThreadRunnable task = new WatchThreadRunnable(dir, watchService);
-            Thread watchDaemonThread = new Thread(task);
-            watchDaemonThread.start();
+            Thread watchThread = new Thread(task);
+            watchThread.start();
             return task;
         }).registerHandler(handler);
     }
@@ -89,8 +89,10 @@ public class DirectoriesWatcher {
                             // A new file was created
                             Path newFile = (Path) event.context();
                             System.out.printf("New file added in directory '%s': %s%n", watchedDirectory, newFile);
-                            // Perform additional actions as needed
-                            handlers.forEach(h -> h.handle(newFile.toFile()));
+                            
+                            new Thread(() ->
+                                handlers.forEach(h -> h.handle(newFile.toFile()))
+                            ).start();
                         }
                     }
 
