@@ -1,0 +1,4 @@
+aqua:
+  pipeline:
+    input: "${user.dir}/input"
+    output: "${user.dir}/output"
